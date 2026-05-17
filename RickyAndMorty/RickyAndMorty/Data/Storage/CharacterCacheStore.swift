@@ -29,19 +29,16 @@ final class UserDefaultsCharacterCacheStore: CharacterCacheStore, @unchecked Sen
 
     func save(_ page: CharacterPageDTO, pageNumber: Int, name: String?, status: CharacterStatus?) async {
         guard let data = try? encoder.encode(CacheEnvelope(page: page)) else { return }
-        userDefaults.set(data, forKey: key(pageNumber: pageNumber, name: name, status: status))
+        userDefaults.set(data, forKey: CacheKeyBuilder.characterPageKey(pageNumber: pageNumber, name: name, status: status))
     }
 
     func load(pageNumber: Int, name: String?, status: CharacterStatus?) async -> CharacterPageDTO? {
-        guard let data = userDefaults.data(forKey: key(pageNumber: pageNumber, name: name, status: status)) else {
+        guard let data = userDefaults.data(forKey: CacheKeyBuilder.characterPageKey(pageNumber: pageNumber, name: name, status: status)) else {
             return nil
         }
         return try? decoder.decode(CacheEnvelope.self, from: data).page
     }
 
-    private func key(pageNumber: Int, name: String?, status: CharacterStatus?) -> String {
-        "characters-page-\(pageNumber)-name-\(name ?? "")-status-\(status?.rawValue ?? "")"
-    }
 }
 
 protocol EpisodeCacheStore: Sendable {
@@ -61,19 +58,16 @@ final class UserDefaultsEpisodeCacheStore: EpisodeCacheStore, @unchecked Sendabl
     func save(_ episodes: [EpisodeDTO]) async {
         for episode in episodes {
             guard let data = try? encoder.encode(episode) else { continue }
-            userDefaults.set(data, forKey: key(id: episode.id))
+            userDefaults.set(data, forKey: CacheKeyBuilder.episodeKey(id: episode.id))
         }
     }
 
     func load(ids: [Int]) async -> [EpisodeDTO]? {
         let episodes = ids.compactMap { id -> EpisodeDTO? in
-            guard let data = userDefaults.data(forKey: key(id: id)) else { return nil }
+            guard let data = userDefaults.data(forKey: CacheKeyBuilder.episodeKey(id: id)) else { return nil }
             return try? decoder.decode(EpisodeDTO.self, from: data)
         }
         return episodes.count == ids.count ? episodes : nil
     }
 
-    private func key(id: Int) -> String {
-        "episode-\(id)"
-    }
 }

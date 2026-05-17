@@ -13,11 +13,22 @@ import Foundation
 final class AppContainer {
     private let repository: CharacterRepository
 
-    init() {
+    init(coreDataStack: CoreDataStack? = nil) {
+        let stack: CoreDataStack
+        if let coreDataStack {
+            stack = coreDataStack
+        } else if let loadedStack = try? CoreDataStack() {
+            stack = loadedStack
+        } else {
+            fatalError("Failed to load Core Data persistent store")
+        }
+
+        UserDefaultsToCoreDataMigrator(stack: stack).migrateIfNeeded()
+
         let networkService = NetworkService()
-        let favoritesStore = UserDefaultsFavoritesStore()
-        let cacheStore = UserDefaultsCharacterCacheStore()
-        let episodeCacheStore = UserDefaultsEpisodeCacheStore()
+        let favoritesStore = CoreDataFavoritesStore(stack: stack)
+        let cacheStore = CoreDataCharacterCacheStore(stack: stack)
+        let episodeCacheStore = CoreDataEpisodeCacheStore(stack: stack)
         repository = RemoteCharacterRepository(
             networkService: networkService,
             favoritesStore: favoritesStore,

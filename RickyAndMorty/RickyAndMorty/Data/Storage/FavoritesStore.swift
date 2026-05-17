@@ -18,7 +18,7 @@ final class UserDefaultsFavoritesStore: FavoritesStore, @unchecked Sendable {
     private let userDefaults: UserDefaults
     private let key: String
 
-    init(userDefaults: UserDefaults = .standard, key: String = "favoriteCharacterIDs") {
+    init(userDefaults: UserDefaults = .standard, key: String = CacheKeyBuilder.favoritesKey) {
         self.userDefaults = userDefaults
         self.key = key
     }
