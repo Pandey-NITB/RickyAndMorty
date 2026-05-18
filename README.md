@@ -41,6 +41,8 @@ Covered areas:
 - `CharacterListViewModel`: initial load, pagination, debounced search, stale request handling.
 - `DefaultFetchCharactersUseCase`: repository call and returned result.
 - `NetworkService`: successful decode, HTTP status mapping, decoding error mapping.
+- `CoreDataStorageTests`: favourites, caches, UserDefaults migration.
+- `CharacterRowViewSnapshotTests`: character row (alive / not favourite, dead / favourite) via [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing). Reference images live in `RickyAndMortyTests/__Snapshots__/`.
 
 Run:
 
